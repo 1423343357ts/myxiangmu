@@ -1,256 +1,322 @@
 <template>
-    <header class="header">
-      <div class="container between">
-        <div class="header__left">
-          <!-- 头部导航栏 -->
-          <li  class="indexhome" style="width: 250px;height: 60px;cursor:pointer;background-color: aliceblue;" @click="goindex"></li>
-          <nav class="hidden-sm-and-down">
-            <ul>
-            <li  style="background-color: aliceblue;" ></li>
-           
-            <!-- <li><nuxt-link >Xoilac TV</nuxt-link></li>
-            <li><nuxt-link >Tỷ lệ</nuxt-link></li>
-            <li><nuxt-link >Lịch Thi Đấu</nuxt-link></li>
-            <li><nuxt-link >BXH</nuxt-link></li>
-            <li><nuxt-link >Máy Tính Dự Đoán Tỷ Số</nuxt-link></li>
-            <li><nuxt-link >Nhận Định Bóng Đá</nuxt-link></li>
-            <li><nuxt-link >Blog Bóng Đá</nuxt-link></li> -->
+  <header class="header">
+    <!-- d-flex -->
+    <div class="container">
+      <div class="logo-area">
+        <nuxt-link class="navbar-brand">
+          <div class="xc"></div>
+          <img src="@/assets/xoilac-tv-logo.png" alt="">
+        </nuxt-link>
 
-            <li v-for="(i,index) in movieList" :key="index" >
-              <div :class="nowindex==index?'nowindexclass':''">
-                <nuxt-link  :to="`/XoilacTV?name=${i}`" @mouseenter="mouseenter(index)" @mouseleave="mouseleave(index)">{{i}}</nuxt-link>
-              </div>
-            </li>  
-            <!-- <li v-for="item in navigation.data" :key="item.id">
-                <nuxt-link :to="`/column/${item.value}`" v-if="+item.type === 1">{{ item.name }}</nuxt-link>
-                <nuxt-link :to="item.value" target="_blank" v-if="+item.type === 2">{{item.name}}</nuxt-link>
-            </li> -->
-            </ul>
-        </nav>
+        <div class="expand-more">
+          <div class="expand-icon" @click="expandMore()">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
         </div>
-        <!-- <div class="header__right items-center">
-          <el-input
-              class="w-50 m-2 mr-20"
-              placeholder="请输入搜索的影视名"
-              :suffix-icon="ElIconSearch"
-              v-model="searchValue"
-              @keyup.enter.native="handleSearch"
-          />
-          <ClientOnly>
-            <template v-if="token">
-              <el-dropdown @command="handleCommand">
-                <el-button circle :icon="ElIconUserFilled" color="#155FAA"></el-button>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item command="user">个人中心</el-dropdown-item>
-                    <el-dropdown-item divided command="logOut">退出</el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-            </template>
-            <template v-else>
-              <el-button circle :icon="ElIconUserFilled" @click="goLogin"></el-button>
-            </template>
-          </ClientOnly>
-        </div> -->
+
       </div>
-      <div class="mobile-nav hidden-sm-only hidden-sm-and-up">
-       
+
+      <div class="navbar-collapse">
         <ul>
-          <li v-for="(i,index) in movieList" :key="index" >
-              <div :class="nowindex==index?'nowindexclass':''">
-                <nuxt-link  :to="`/XoilacTV?name=${i}`" @mouseenter="mouseenter(index)" @mouseleave="mouseleave(index)">{{i}}</nuxt-link>
-              </div>
-          </li>  
-          <!-- <li v-for="item in navigation.data" :key="item.id">
-            <nuxt-link :to="`/column/${item.value}`" v-if="+item.type === 1">{{ item.name }}</nuxt-link>
-            <nuxt-link :to="item.value" target="_blank" v-if="+item.type === 2">{{item.name}}</nuxt-link>
-          </li> -->
+          <li v-for="(i, index) in movieList" :key="index">
+            <nuxt-link to="/">{{ i }}</nuxt-link>
+          </li>
         </ul>
+      </div>
+
+      <div class="draw-nav">
+        <el-drawer v-model="drawer" :with-header="false">
+          <div class="close">
+            <el-icon :size="30" color="#fff" @click="drawer = false">
+              <CloseBold />
+            </el-icon>
+          </div>
+          <div class="draw-nt">
+            <ul>
+              <li v-for="(i, index) in movieList" :key="index">
+                <nuxt-link to="/">{{ i }}</nuxt-link>
+              </li>
+            </ul>
+          </div>
+
+        </el-drawer>
+      </div>
+
+
+
+
+      <!-- <div class="header__left">
+          头部导航栏
+          <li  class="indexhome" style="width: 250px;height: 60px;cursor:pointer;background-color: aliceblue;" @click="goindex"></li>
+            <nav class="hidden-sm-and-down">
+              <ul>
+                <li  style="background-color: aliceblue;" ></li>
+
+                <li v-for="(i,index) in movieList" :key="index" >
+                  <div :class="nowindex==index?'nowindexclass':''">
+                    <nuxt-link  :to="`/XoilacTV?name=${i}`" @mouseenter="mouseenter(index)" @mouseleave="mouseleave(index)">{{i}}</nuxt-link>
+                  </div>
+                </li>  
+              </ul>
+          </nav>
+        </div> -->
     </div>
 
-    </header>
-    <div class="header__height__placeholder"></div>
-  </template>
+  </header>
+</template>
   
-  <script setup lang="ts">
-  // import{DecryptData} from ''
-  const route = useRoute()
-  const searchValue = ref<string>('')
-  const token = ref<string | undefined>(undefined)
-  const movieList = ref(['Xoilac TV','Tỷ lệ','Lịch Thi Đấu','BXH','Máy Tính Dự Đoán Tỷ Số','Nhận Định Bóng Đá','Blog Bóng Đá'])
-  const nowindex=ref<any>()
-  function handleCommand(command: string) {
-    switch (command) {
-      case 'logOut':
-        logOut()
-        break;
-      default:
-        navigateTo('/user')
-        break;
-    }
+<script setup lang="ts">
+// import{DecryptData} from ''
+import { CloseBold } from '@element-plus/icons-vue'
+const route = useRoute()
+const searchValue = ref<string>('')
+const token = ref<string | undefined>(undefined)
+const movieList = ref(['Xoilac TV', 'Lịch Thi Đấu', 'Bảng Xếp Hạng', 'KQBD', 'Nhận Định', 'Máy Tính Dự Đoán', 'Tin Thể Thao'])
+const nowindex = ref<any>()
+
+const drawer = ref<boolean>(false)
+
+
+function handleCommand(command: string) {
+  switch (command) {
+    case 'logOut':
+      logOut()
+      break;
+    default:
+      navigateTo('/user')
+      break;
   }
-  function goindex(command: string){
-    navigateTo('/')
-  }
-  function logOut() {}
-  
-  function goLogin() {}
-  
-  function handleSearch() {
-    navigateTo('/search?keyword=' + searchValue.value)
-  }
-  // 移入移出
-  function mouseenter(command: any){
-    nowindex.value=command
-  }
-  function mouseleave(command: any){
-    nowindex.value=null
-  }
-  
-  // ...
-    // 请求获取栏目数据接口
-    // http://api.yinchunyu.com/swagger-ui#/焦点图管理/ColumnController_all
-    // const { data: navigation } = await useServerRequest<{data: any}>('column/all', {
-    // query: { status: 0 }
-    // })
-     const { data: navigation } = await useServerRequest<{data: any}>('/rpa/competition/byCompetitionGetMatch', {
-      // query: { status: 0 }
-      method: "post",
-      body:
-        {
+}
+function goindex(command: string) {
+  navigateTo('/')
+}
+function logOut() { }
+
+function goLogin() { }
+
+function handleSearch() {
+  navigateTo('/search?keyword=' + searchValue.value)
+}
+// 移入移出
+function mouseenter(command: any) {
+  nowindex.value = command
+}
+function mouseleave(command: any) {
+  nowindex.value = null
+}
+function expandMore() {
+  // console.log('$===',jQuery)
+  drawer.value = true
+}
+
+// ...
+// 请求获取栏目数据接口
+// http://api.yinchunyu.com/swagger-ui#/焦点图管理/ColumnController_all
+// const { data: navigation } = await useServerRequest<{data: any}>('column/all', {
+// query: { status: 0 }
+// })
+const { data: navigation } = await useServerRequest<{ data: any }>('/rpa/competition/byCompetitionGetMatch', {
+  // query: { status: 0 }
+  method: "post",
+  body:
+  {
     "area": "",
     "date": "",
     "language": "",
     "name": "",
     "pageNumber": 0,
     "pageSize": 0
-}
-      
-    })
-    console.log(DecryptData(navigation.value))
-  </script>
+  }
+
+})
+ 
+</script>
   
   
-  <style lang="scss">
-  .header {
-    position: fixed;
-    margin-bottom: 5px;
+<style lang="scss" scoped>
+// .container {
+//   margin: 0 auto;
+//   display: flex;
+//   padding: 0 12px;
+// }
+
+.header {
+  position: relative;
+  width: 100%;
+  // height: 55px;
+  background-color: $theme-color;
+
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
     top: 0;
-    z-index: 999;
-    width: 100%;
-    height: 60px;
-    background-color: #2AB036;
-    .nowindexclass{
-      background-color: #fff;
-      color: #2AB036;
-      a{
-        color: #2AB036 !important;
-      }
-    }
-    &__left {
+    width: 50%;
+    height: 100%;
+    // z-index: -1;
+    background: #fff;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+
+    .logo-area {
+      padding: 5px 0;
+      padding-right: 20px;
       display: flex;
-      .indexhome{
-          background: url(../assets/xoilac-tv-logo.png);
-          width: 100%;
-          height: 100%;
-          background-size: 100% 100%;
-        }
-      .logo {
+      justify-content: space-between;
+
+      // width: 187.5px;
+      .navbar-brand {
         display: flex;
-        width: 150px;
-        height: 55px;
-        line-height: 55px;
-        font-size: 24px;
-        color: #FF9900;
-        font-weight: bold;
-        background-position: 50% 50% !important;
-        background-size: cover !important;
-        overflow: hidden;
-      }
-      nav {
-        .indexhome{
-            background: url(../assets/xoilac-tv-logo.png);
-            width: 100%;
-            height: 100%;
-            background-size: 100% 100%;
-        }
-        ul {
-          display: flex;
-          li {
-            a {
-              display: inline-block;
-              height: 60px;
-              line-height: 60px;
-              font-size: 15px;
-              padding: 0 20px;
-              color: #fff;
-            }
-            // &.active {
-            //   a {
-            //     background-color: #fff;
-            //     color: #2AB036;
-            //   }
-            // }
-          }
-        }
-      }
-    }
-    &__height__placeholder {
-      height: 55px;
-    }
-  }
-  
-  
-  @media only screen and (max-width:991px){
-    .header {
-      position: relative;
-      .indexhome{
-          background: url(../assets/xoilac-tv-logo.png);
-          width: 100%;
-          height: 100%;
-          background-size: 100% 100%;
+        // position: relative;
+        align-items: center;
+        height: 100%;
+        margin: 0;
+        top: 0;
+        background: white;
+        width: fit-content;
+        left: 0;
+        overflow-y: clip;
+        min-width: 150px;
+
+        .xc {
           position: absolute;
-          left: 0px;
+          width: 162px;
+          left: 0;
+          z-index: -1;
         }
-      .mobile-nav {
-        border-top: #666 solid 1px;
-        background: #292838;
-        position: absolute;
-        height: 46px;
-        bottom: -46px;
-        width: 100%;
-        overflow-x: auto;
-        overflow-y: hidden;
-        box-sizing: border-box;
-        padding-top: 8px;
-        z-index: 9;
-        &::-webkit-scrollbar {
-          display: none;
+
+        img {
+          height: 45px;
+          max-height: 100%;
+          width: auto;
+          margin: 0 auto;
+          display: block;
         }
-       
-        ul {
-          white-space: nowrap;
-          li {
-            display: inline-block;
+      }
+
+
+    }
+
+    .navbar-collapse {
+      width: 100%;
+      box-sizing: border-box;
+      background: $theme-color;
+
+      ul {
+        display: flex;
+        align-items: center;
+        height: 100%;
+
+        li {
+          height: 100%;
+
+          a {
             position: relative;
-            &.active {
-              a {
-                color: #1583f3;
-              }
-            }
-            a {
-              display: inline-block;
-              padding: 5px 19px;
-              color: #ffffff;
-              font-size: 16px;
+            padding: 0 15px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            color: $theme-font-color;
+            font-weight: bold;
+            font-size: 16px;
+
+            &:hover {
+              background-color: $theme-font-color;
+              color: $theme-color;
             }
           }
         }
       }
     }
-    .header__height__placeholder {
-      height: 46px;
+
+    .expand-more {
+      width: 40px;
+      height: auto;
+      padding: 5px 20px;
+      display: none;
+
+      .expand-icon {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        cursor: pointer;
+
+        span {
+          display: inline-block;
+          width: 100%;
+          height: 4px;
+          background: #000;
+        }
+      }
+
+
+    }
+
+    .draw-nav {
+      display: none;
+      ::v-deep(.el-drawer__body) {
+        background-color: $theme-color;
+
+        .close {
+          display: flex;
+          justify-content: flex-end;
+
+          .el-icon {
+            cursor: pointer;
+          }
+        }
+        .draw-nt {
+          ul li a {
+            display: inline-block;
+            padding: 10px 0;
+            font-weight: bold;
+            font-size: 16px;
+            color: $theme-font-color;
+          }
+        }
+      }
+    }
+
+  }
+
+}
+
+@media only screen and (max-width: 768px) {
+  .header {
+    &::before {
+      display: none;
     }
   }
-  </style>
+
+  .container {
+    display: block;
+    padding-left: 0;
+    padding-right: 0;
+    // padding-bottom: 20px;
+
+    .logo-area {
+      .expand-more {
+        display: block;
+      }
+    }
+
+    .navbar-collapse ul {
+      display: none !important;
+
+      li a {
+        padding-top: 15px !important;
+        padding-bottom: 15px !important;
+      }
+    }
+    .draw-nav {
+      display: block !important;
+    }
+  }
+}</style>

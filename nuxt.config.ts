@@ -33,4 +33,14 @@ export default defineNuxtConfig({
     'element-plus/dist/index.css',
     'element-plus/theme-chalk/display.css'
   ],
+  vite: {
+    css: {
+      preprocessorOptions: {
+        scss: {
+          additionalData: '@import "assets/css/theme.scss";',
+        }
+      }
+    }
+  }
+
 })
