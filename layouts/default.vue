@@ -1,5 +1,5 @@
 <template>
     <app-header />
     <slot />
-    <!-- <app-footer /> -->
+    <app-footer />
 </template>

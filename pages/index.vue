@@ -17,9 +17,36 @@
             </template>
 
             <div class="card-list">
-              <div class="card-game-iv" v-for="item in 4">
+              <div class="card-game-iv" v-for="(item,index) in 4">
                 <div class="card-game-containe">
-
+                  <div class="blv-container">
+                    <div class="blv-collapse">
+                      <span class="blv-toggle" @click="openBlv(index)">BLV (4)</span>
+                      <!-- :class="false ? 'ops' : ''" -->
+                      <div class="blv-list" ref="dom">
+                        <div class="blv-item">
+                          <nuxt-link>
+                            EDWARD
+                          </nuxt-link>
+                        </div>
+                        <div class="blv-item">
+                          <nuxt-link>
+                            SUNNY
+                          </nuxt-link>
+                        </div>
+                        <div class="blv-item">
+                          <nuxt-link>
+                            EDWARD
+                          </nuxt-link>
+                        </div>
+                        <div class="blv-item">
+                          <nuxt-link>
+                            EDWARD
+                          </nuxt-link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -132,17 +159,34 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab.paneName)
 }
 
-const { data: bannerList  } = await useServerRequest<{ data: any }>('/rpa/competition/ongoingCompetition', {
+const { data: bannerList } = await useServerRequest<{ data: any }>('/rpa/competition/ongoingCompetition', {
   method: "post",
   body: {
+    "area": '',
+    "language": '',
+    "name": '',
     "pageNumber": 1,
     "pageSize": 20
   },
 })
 
 // console.log('bannerList===',bannerList.value)
-console.log('bannerList===',DecryptData(bannerList.value))
+console.log('bannerList===', DecryptData(bannerList.value))
 
+// const dom: Ref<HTMLElement | null> = ref(null)
+const dom = ref<any>(null)
+const openBlv = (idx: number) => {
+  // if(dom.value) {
+    console.log(dom.value[idx].style.opacity)
+    dom.value[idx].style.opacity = 1
+  // }
+ 
+  // console.log(proxy.$refs.dom[idx])
+  // proxy.$refs.dom[idx].style.opacity = 1
+
+  // console.log(dom.value)
+  // console.log('123')
+}
 
 </script>
   
@@ -247,9 +291,60 @@ $Theme-color: #2AB036;
 
           .card-game-containe {
             height: 100%;
+            position: relative;
             border-radius: 8px;
             border: 1px solid red;
             box-sizing: border-box;
+            overflow: hidden;
+
+            .blv-collapse {
+
+              .blv-toggle {
+                position: absolute;
+                padding: 5px;
+                top: 15px;
+                right: 0;
+                background: $theme-color;
+                cursor: pointer;
+                font-weight: 600;
+                z-index: 9;
+              }
+
+              .blv-list {
+                position: absolute;
+                display: flex;
+                flex-wrap: wrap;
+                top: 50%;
+                left: 50%;
+                width: 100%;
+                height: 100%;
+                opacity: 0;
+                transform: translate(-50%, -50%);
+                background-color: #0c0c0ce8;
+
+                &.ops {
+                  opacity: 1;
+                }
+
+                .blv-item {
+                  width: 50%;
+                  height: 50%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  border-right-style: solid;
+                  border-bottom-style: solid;
+                  border-image: radial-gradient(circle at center, #2AB036, #ffe59403);
+                  border-image-slice: 1;
+                  box-sizing: border-box;
+
+                  a {
+                    color: $theme-font-color;
+                  }
+                }
+              }
+
+            }
           }
         }
       }
