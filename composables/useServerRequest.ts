@@ -7,7 +7,7 @@ function isArray(str: unknown) {
 
 export const useServerRequest = <T= unknown>(url: string, opts: UseFetchOptions<T, unknown>) => {
   const token = useCookie('token')
-  console.log('token',token)
+  // console.log('token',token)
   const runtimeConfig = useRuntimeConfig()
 
   const defaultOptions: UseFetchOptions<unknown> = {

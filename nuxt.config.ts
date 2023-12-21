@@ -4,7 +4,10 @@ export default defineNuxtConfig({
   modules: ['@element-plus/nuxt','@nuxtjs/i18n'],
   i18n: {
     vueI18n: './i18n.config.ts'
-  }, 
+  },
+  typescript: {
+    strict: true
+  },
   app: {
     head: {
       viewport: 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no',

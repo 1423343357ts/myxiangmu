@@ -7,7 +7,7 @@
       </div>
 
       <div class="tabsout">
-        <el-tabs v-model="activeName">
+        <el-tabs v-model="activeName" @tab-change="handleTab()">
           <el-tab-pane v-for="(i, index) in constList" :key="index" :name="i.title">
             <template #label>
               <div class="custom-tabs-label" @mouseenter="mouseenter(index)" @mouseleave="mouseleave(index)">
@@ -17,13 +17,20 @@
             </template>
 
             <div class="card-list">
-              <div class="card-game-iv" v-for="(item,index) in 4">
+              <!-- courseList.r.data -->
+              <div class="card-game-iv" v-for="(item, index) in decCourseList" :key="index">
                 <div class="card-game-containe">
+                  <div class="card-title">
+                    <div class="owards"> {{ item.name }} </div>
+                    <div class="stage-label">Round 3</div>
+                  </div>
+
                   <div class="blv-container">
                     <div class="blv-collapse">
+
                       <span class="blv-toggle" @click="openBlv(index)">BLV (4)</span>
-                      <!-- :class="false ? 'ops' : ''" -->
                       <div class="blv-list" ref="dom">
+                        <span class="close-blv" @click="closeBlv(index)">✕</span>
                         <div class="blv-item">
                           <nuxt-link>
                             EDWARD
@@ -47,46 +54,55 @@
                       </div>
                     </div>
                   </div>
+
+                  <nuxt-link class="match-link">
+                    <div class="match-content">
+                      <div class="match-mid-option">
+                        <div class="match-team">
+                          <div class="team-logo-option">
+                            <img :src="item.teamaImageUrl" alt="">
+                          </div>
+                          <div class="team-label-option">
+                            {{ item.teamaShort }}
+                          </div>
+                        </div>
+                        <div class="match-status">
+                          <div class="match-live-time-info-option">
+                            <div class="live-icon"></div>
+                            <div class="match-time-count-option">H2: 92'</div>
+
+                          </div>
+                          <div class="match-score-option">
+                            2 - 1
+                          </div>
+                        </div>
+
+                        <div class="match-team">
+                          <div class="team-logo-option">
+                            <img :src="item.teambImageUrl" alt="">
+                          </div>
+                          <div class="team-label-option">
+                            {{ item.teambShort }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </nuxt-link>
+
+                  <div class="watch">
+                    <div class="watch-btn">
+                      <nuxt-link>Xem ngay</nuxt-link>
+                      <span class="arrow-match">⟩⟩</span>
+                    </div>
+                  </div>
+
+
                 </div>
               </div>
             </div>
           </el-tab-pane>
         </el-tabs>
       </div>
-
-      <!-- <div class="tabsout">
-        <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
-          <el-tab-pane v-for="(i, index) in constList" :key="index" :name="i.title">
-            <template #label>
-              <span class="custom-tabs-label" @mouseenter="mouseenter(index)" @mouseleave="mouseleave(index)">
-                <span>{{ i.title }}</span>
-                <el-tag :class="(nowindex == index || nowindexname == i.title) ? 'ml-2s' : 'ml-2'">{{ i.title2 }}</el-tag>
-              </span>
-            </template>
-            <div>
-              <home :fatherMessage="i.title"></home>
-            </div>
-          </el-tab-pane>
-
-          <el-tab-pane>
-            <template #label>
-              <span class="custom-tabs-label">
-                <span>Tất cả</span>
-                <el-tag class="ml-2">139</el-tag>
-              </span>
-            </template>
-            <div>
-              Tất cả
-            </div>
-          </el-tab-pane>
-
-
-          <el-tab-pane label="Trực tiếp">Trực tiếp</el-tab-pane>
-          <el-tab-pane label="Nóng">Nóng</el-tab-pane>
-          <el-tab-pane label="Hôm nay">Hôm nay</el-tab-pane>
-          <el-tab-pane label="Ngày mai">Ngày mai</el-tab-pane>
-        </el-tabs>
-      </div> -->
     </div>
 
   </div>
@@ -95,25 +111,12 @@
 <script setup lang="ts">
 const i18n = useI18n();
 import { useServerRequest } from "~/composables/useServerRequest";
+import type { gameRespon } from "~/types/index/index.d.ts"
 import { ref } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
 const fatherMessage = ref<string>("")
 
-//   // banner数据
-// const bannerList = ref([{}])
-// // 影视数据
-// const movieList = ref([
-//   {
-//     rows: [{}],
-//     ranks: [{}]
-//   }
-// ]),
-// // 获取友情链接
-// const linkList = ref([
-//   { text: 'Nuxt3教程', url: 'http://www.yinchunyu.com' }
-// ]),
 const nowindex = ref<any>()
-let nowindexname = ref('Tất cả')
 // const clickindex=ref<any>{}
 let constList = ref([
   {
@@ -128,38 +131,27 @@ let constList = ref([
     'title': 'Nóng',
     'title2': '47'
   },
-  {
-    'title': 'Hôm nay',
-    'title2': '66'
-  },
-  {
-    'title': 'Ngày mai',
-    'title2': '71'
-  }
 ])
 // 移入移出
 function mouseenter(command: any) {
   nowindex.value = command
-  console.log('222', nowindex.value)
 }
 function mouseleave(command: any) {
   nowindex.value = null
 }
-// const [{ data: bannerList }, { data: linkList }, { data: movieList }] = await Promise.all([
-//   // banner数据
-//   useServerRequest('basic/banner/list'),
-//   // 获取友情链接
-//   useServerRequest('basic/link/all'),
-//   // 影视数据
-//   useServerRequest('web/index')
-// ])
 const activeName = ref('Tất cả')
-const handleClick = (tab: TabsPaneContext, event: Event) => {
-  nowindexname.value = tab.paneName
-  console.log(tab.paneName)
+
+
+
+const handleTab = () => {
+  if (activeName.value == 'Tất cả') getCourseList();
+  if (activeName.value == 'Trực tiếp') getCourseIngList()
+  if (activeName.value == 'Nóng')  getCourseFutureList()
 }
 
-const { data: bannerList } = await useServerRequest<{ data: any }>('/rpa/competition/ongoingCompetition', {
+
+const decCourseList = ref<gameRespon[]>([])
+const { data: courseList } = await useServerRequest<{ data: any }>('/rpa/competition/schedule', {
   method: "post",
   body: {
     "area": '',
@@ -167,31 +159,72 @@ const { data: bannerList } = await useServerRequest<{ data: any }>('/rpa/competi
     "name": '',
     "pageNumber": 1,
     "pageSize": 20
-  },
+  }
 })
 
-// console.log('bannerList===',bannerList.value)
-console.log('bannerList===', DecryptData(bannerList.value))
+decCourseList.value = DecryptData(courseList.value).r.data
+console.log('courseList===', DecryptData(courseList.value).r.data)
 
-// const dom: Ref<HTMLElement | null> = ref(null)
-const dom = ref<any>(null)
+
+const getCourseList = async () => {
+  const { data: courseList } = await useServerRequest<{ data: any }>('/rpa/competition/schedule', {
+    method: "post",
+    body: {
+      "area": '',
+      "language": '',
+      "name": '',
+      "pageNumber": 1,
+      "pageSize": 20
+    }
+  })
+  decCourseList.value = DecryptData(courseList.value).r.data
+  console.log('courseList===', DecryptData(courseList.value).r.data)
+}
+
+const getCourseIngList = async () => {
+  const { data: courseList } = await useServerRequest<{ data: any }>('/rpa/competition/ongoingCompetition', {
+    method: "post",
+    body: {
+      "area": '',
+      "language": '',
+      "name": '',
+      "pageNumber": 1,
+      "pageSize": 20
+    }
+  })
+  decCourseList.value = DecryptData(courseList.value).r.data
+  console.log('courseList===', DecryptData(courseList.value).r.data)
+}
+
+const getCourseFutureList = async() => {
+  const { data: courseList } = await useServerRequest<{ data: any }>('/rpa/competition/future', {
+    method: "post",
+    body: {
+      "area": '',
+      "language": '',
+      "name": '',
+      "pageNumber": 1,
+      "pageSize": 20
+    }
+  })
+  console.log('courseList==',DecryptData(courseList.value)) 
+  decCourseList.value = DecryptData(courseList.value).r.data
+  console.log('courseList===', DecryptData(courseList.value).r.data)
+}
+
+const dom = ref<Array<HTMLElement>>([])
 const openBlv = (idx: number) => {
-  // if(dom.value) {
-    console.log(dom.value[idx].style.opacity)
-    dom.value[idx].style.opacity = 1
-  // }
- 
-  // console.log(proxy.$refs.dom[idx])
-  // proxy.$refs.dom[idx].style.opacity = 1
+  dom.value[idx].style.display = 'flex'
+}
 
-  // console.log(dom.value)
-  // console.log('123')
+const closeBlv = (idx: number) => {
+  dom.value[idx].style.display = 'none'
 }
 
 </script>
   
 <style lang="scss" scoped>
-$Theme-color: #2AB036;
+// $theme-color: #2AB036;
 
 .container {
   margin-top: 20px;
@@ -240,7 +273,7 @@ $Theme-color: #2AB036;
           }
 
           .el-tabs__active-bar {
-            background-color: $Theme-color;
+            background-color: $theme-color;
           }
         }
 
@@ -283,7 +316,7 @@ $Theme-color: #2AB036;
 
         .card-game-iv {
           width: 50%;
-          height: 240px;
+          // height: 240px;
           padding: 0 6px;
           margin: 6px 0;
 
@@ -297,7 +330,35 @@ $Theme-color: #2AB036;
             box-sizing: border-box;
             overflow: hidden;
 
+            .card-title {
+              position: absolute;
+              left: 15px;
+              top: 15px;
+              width: 100%;
+              // padding: 0 15px;
+
+              .owards {
+                width: calc(100% - 100px);
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                color: $theme-font-color;
+              }
+
+              .stage-label {
+                color: $theme-font-color;
+              }
+            }
+
             .blv-collapse {
+              .close-blv {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                color: $theme-font-color;
+                z-index: 14;
+                cursor: pointer;
+              }
 
               .blv-toggle {
                 position: absolute;
@@ -318,9 +379,11 @@ $Theme-color: #2AB036;
                 left: 50%;
                 width: 100%;
                 height: 100%;
-                opacity: 0;
+                // opacity: 0;
+                display: none;
                 transform: translate(-50%, -50%);
                 background-color: #0c0c0ce8;
+                z-index: 10;
 
                 &.ops {
                   opacity: 1;
@@ -345,6 +408,149 @@ $Theme-color: #2AB036;
               }
 
             }
+
+            .match-link {
+              cursor: pointer;
+
+              .match-content {
+                position: relative;
+                padding: 50px 14px 0px;
+
+                .match-mid-option {
+                  display: flex;
+                  height: 130px;
+
+                  .match-team {
+                    flex: 1;
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-direction: column;
+
+                    .team-logo-option {
+                      width: 100%;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+
+                      img {
+                        max-width: 70px;
+                        height: auto;
+                      }
+                    }
+
+                    .team-label-option {
+                      font-size: 16px;
+                      font-weight: 700;
+                      line-height: 150%;
+                      color: $theme-font-color;
+                    }
+                  }
+
+                  .match-status {
+                    padding: 0 10px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-direction: column;
+
+                    .match-live-time-info-option {
+                      flex-direction: row;
+                      align-items: center;
+                      margin-bottom: 10px;
+                      margin-top: 10px;
+                      display: flex;
+                      justify-content: center;
+
+                      .live-icon {
+                        margin: 0 4px;
+                        display: block;
+                        height: 8px;
+                        width: 8px;
+                        border-radius: 50%;
+                        background-color: $theme-color;
+                      }
+
+                      .match-time-count-option {
+                        font-size: 12px;
+                        font-weight: 700;
+                        line-height: 150%;
+                        color: $theme-font-color;
+                        text-transform: uppercase;
+                      }
+                    }
+
+                    .match-score-option {
+                      font-size: 24px;
+                      padding: 10px;
+                      background-color: $theme-color;
+                      border-radius: 5px;
+                    }
+                  }
+                }
+              }
+            }
+
+            .watch {
+              width: 100%;
+              display: grid;
+              justify-content: flex-end;
+              align-items: center;
+              height: 50px;
+
+              box-sizing: border-box;
+
+              &::before {
+                content: "";
+                width: 100%;
+                background: #00000040;
+                height: 100%;
+                display: block;
+                position: absolute;
+                z-index: -2;
+              }
+
+              // &:hover {
+
+              // }
+
+              .watch-btn {
+                position: relative;
+                display: flex;
+                align-items: center;
+                height: 100%;
+                padding: 6px 12px;
+                box-sizing: border-box;
+                border-radius: 0 2px 2px 0;
+                background-color: $theme-color;
+
+                a {
+                  height: 100%;
+                  display: flex;
+                  align-items: center;
+                  color: #000;
+                  font-weight: bolder;
+                  border-radius: 0;
+                }
+
+                .arrow-match {
+                  margin-left: 10px;
+                }
+
+                &::before {
+                  content: '';
+                  position: absolute;
+                  top: -1px;
+                  right: 100%;
+                  width: 100%;
+                  height: 100%;
+                  border-top: 62px solid transparent;
+                  border-bottom: 60px solid transparent;
+                  border-right: 20px solid $theme-color;
+                }
+              }
+            }
           }
         }
       }
@@ -359,75 +565,14 @@ $Theme-color: #2AB036;
   }
 }
 
-.index {
-
-
-  // .ml-2 {
-  //   background-color: #fff;
-  //   color: #2AB036;
-  //   padding: 0px 0px;
-  //   height: 20px;
-  //   width: 30px;
-  //   border: 0px;
-  // }
-
-  // .ml-2s {
-  //   background-color: #2AB036;
-  //   color: #fff;
-  //   padding: 0px 0px;
-  //   height: 20px;
-  //   width: 30px;
-  //   border: 0px;
-  // }
-
-  // .demo-tabs>.el-tabs__content {
-  //   padding: 32px;
-  //   color: #6b778c;
-  //   font-size: 32px;
-  //   font-weight: 600;
-  // }
-
-  // .demo-tabs .custom-tabs-label .el-icon {
-  //   vertical-align: middle;
-  // }
-
-  // .demo-tabs .custom-tabs-label span {
-  //   vertical-align: middle;
-  //   margin-left: 4px;
-  // }
-
-  // .el-tabs__item {
-  //   color: #fff;
-  //   font-size: 20px;
-  // }
-
-  // .el-tabs__item.is-active {
-  //   color: #2AB036;
-  // }
-
-  // .el-tabs__item:hover {
-  //   color: #2AB036;
-  //   cursor: pointer;
-  // }
-
-  // .el-tabs__nav-wrap::after {
-  //   background-color: #1a1b1c;
-  // }
-
-  // .el-tabs__active-bar {
-  //   background-color: #2AB036 !important;
-  // }
-
-
-
-  // padding-top: 20px;
-  // background-color: var(--content-background-color)
-}
-
 @media only screen and (max-width: 768px) {
   .index {
     h1::after {
       display: none;
+    }
+
+    .card-list .card-game-iv {
+      width: 100% !important;
     }
   }
 }
