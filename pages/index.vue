@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-
+    <!-- {{ $dayjs().format('YYYY-MM-DD hh:mm:ss') }} -->
     <div class="index">
       <div>
         <h1 class="entry-title owards">Xoilac TV – Link Xem Trực Tiếp Bóng Đá Xôi Lạc TV Full HD</h1>
@@ -15,6 +15,10 @@
                 <el-tag>{{ i.title2 }}</el-tag>
               </div>
             </template>
+
+            <div v-if="activeName == 'Nóng'" style="margin-bottom: 10px;">
+              <el-date-picker v-model="date" type="date" placeholder="Pick a day" :editable="false" :disabled-date="disabledDate" @change="handleChange()"/>
+            </div>
 
             <div class="card-list">
               <!-- courseList.r.data -->
@@ -102,6 +106,14 @@
             </div>
           </el-tab-pane>
         </el-tabs>
+
+        <div class="pagination">
+          <el-pagination background layout="prev, pager, next" :current-page="pageNumber" :page-size="20" :total="total"
+            @current-change="handleCurrentChange" />
+        </div>
+
+
+
       </div>
     </div>
 
@@ -140,31 +152,31 @@ function mouseleave(command: any) {
   nowindex.value = null
 }
 const activeName = ref('Tất cả')
-
-
+const date = ref('')
+const pageNumber = ref<number>(1)
 
 const handleTab = () => {
+  pageNumber.value = 1
   if (activeName.value == 'Tất cả') getCourseList();
   if (activeName.value == 'Trực tiếp') getCourseIngList()
-  if (activeName.value == 'Nóng')  getCourseFutureList()
+  if (activeName.value == 'Nóng') getCourseFutureList()
 }
 
-
-const decCourseList = ref<gameRespon[]>([])
+const decCourseList = ref([])
+const total = ref<number>()
 const { data: courseList } = await useServerRequest<{ data: any }>('/rpa/competition/schedule', {
   method: "post",
   body: {
     "area": '',
     "language": '',
     "name": '',
-    "pageNumber": 1,
+    "pageNumber": pageNumber.value,
     "pageSize": 20
   }
 })
 
 decCourseList.value = DecryptData(courseList.value).r.data
-console.log('courseList===', DecryptData(courseList.value).r.data)
-
+total.value = DecryptData(courseList.value).r.total
 
 const getCourseList = async () => {
   const { data: courseList } = await useServerRequest<{ data: any }>('/rpa/competition/schedule', {
@@ -173,12 +185,13 @@ const getCourseList = async () => {
       "area": '',
       "language": '',
       "name": '',
-      "pageNumber": 1,
+      "pageNumber": pageNumber.value,
       "pageSize": 20
     }
   })
   decCourseList.value = DecryptData(courseList.value).r.data
-  console.log('courseList===', DecryptData(courseList.value).r.data)
+  total.value = DecryptData(courseList.value).r.total
+  console.log('courseList===', DecryptData(courseList.value))
 }
 
 const getCourseIngList = async () => {
@@ -188,28 +201,40 @@ const getCourseIngList = async () => {
       "area": '',
       "language": '',
       "name": '',
-      "pageNumber": 1,
+      "pageNumber": pageNumber.value,
       "pageSize": 20
     }
   })
   decCourseList.value = DecryptData(courseList.value).r.data
-  console.log('courseList===', DecryptData(courseList.value).r.data)
+  total.value = DecryptData(courseList.value).r.total
+  console.log('courseList===', DecryptData(courseList.value))
 }
 
-const getCourseFutureList = async() => {
-  const { data: courseList } = await useServerRequest<{ data: any }>('/rpa/competition/future', {
+const disabledDate  = (time: Date) => {
+    return time.getTime() < Date.now();
+}
+
+const nuxtApp = useNuxtApp()
+date.value = nuxtApp.$dayjs().format('YYYY-MM-DD')
+
+const handleChange = () => {
+  console.log('===')
+  getCourseFutureList()
+}
+
+const getCourseFutureList = async () => {
+  const { data: courseList } = await useServerRequest<{ data: any }>('/rpa/competition/getCompetition', {
     method: "post",
     body: {
-      "area": '',
-      "language": '',
-      "name": '',
-      "pageNumber": 1,
-      "pageSize": 20
+      "date": date.value,
+      "language": "",
+      "pageNumber": pageNumber.value,
+      "pageSize": 20,
     }
   })
-  console.log('courseList==',DecryptData(courseList.value)) 
   decCourseList.value = DecryptData(courseList.value).r.data
-  console.log('courseList===', DecryptData(courseList.value).r.data)
+  total.value = DecryptData(courseList.value).r.total
+  console.log('courseList===', DecryptData(courseList.value))
 }
 
 const dom = ref<Array<HTMLElement>>([])
@@ -219,6 +244,13 @@ const openBlv = (idx: number) => {
 
 const closeBlv = (idx: number) => {
   dom.value[idx].style.display = 'none'
+}
+
+const handleCurrentChange = (val: number) => {
+  pageNumber.value = val
+  if (activeName.value == 'Tất cả') getCourseList();
+  if (activeName.value == 'Trực tiếp') getCourseIngList()
+  if (activeName.value == 'Nóng') getCourseFutureList()
 }
 
 </script>
@@ -552,6 +584,25 @@ const closeBlv = (idx: number) => {
               }
             }
           }
+        }
+      }
+
+      .pagination {
+        display: flex;
+        justify-content: center;
+
+        ::v-deep(.is-active) {
+          background-color: $theme-color;
+        }
+
+        ::v-deep(button):hover {
+          color: $theme-font-color;
+          background-color: $theme-color;
+        }
+
+        ::v-deep(li):hover {
+          color: $theme-font-color;
+          background-color: $theme-color;
         }
       }
 
