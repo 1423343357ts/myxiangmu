@@ -20,6 +20,23 @@
               </el-select>
             </div>
           </div>
+          <div>
+            <el-table :data="tableList" stripe style="width: 100%">
+              <el-table-column prop="teamName" label="Đội（团队）" width="180" />
+              <el-table-column prop="played" label="Số trận đấu(比赛次数)" width="180" />
+              <el-table-column prop="win" label="Thắng(赢)" />
+              <el-table-column prop="draw" label="Hòa(平局)" />
+              <el-table-column prop="lose" label="Thua(输)" />Phong độ
+              <el-table-column label="Phong độ">
+                <template #default="scope">
+                  <div style="display: flex;">
+                    <span v-for="i in scope.row.recent" :key="i.index" :class="i=='W'?'cla1':i=='L'?'cla2':'cla3' " >{{ i }}</span>
+                  </div>
+                  <!-- {{ scope.row.recent }} -->
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
        </div>
        <div class="right">
 
@@ -31,7 +48,7 @@
 <script lang="ts" setup>
 const text = ref('我是动态内容')
 // 获取联赛列表
-const competitionId = ref('')
+let competitionId = ref('')
 const decCourseList = ref([])
 const total = ref<number>()
 const { data: courseList } = await useServerRequest<{ data: any }>('/rpa/competition/leagueName', {
@@ -41,18 +58,43 @@ const { data: courseList } = await useServerRequest<{ data: any }>('/rpa/competi
   "language": "",
   "name": "",
   "pageNumber": 1,
-  "pageSize": 20
+  "pageSize": 100
 }
 })
 decCourseList.value = DecryptData(courseList.value).r.data
+competitionId.value=decCourseList.value[0].competitionId
+
 const select_change = (value:any) => {
   console.log('===',competitionId.value)
   console.log("当前选择",competitionId.value)
+  getCourseFutureList()
 }
 
-console.log("联赛列表",decCourseList.value)
+const tableList = ref([])
+const { data: courseLisst } = await useServerRequest<{ data: any }>('/rpa/competition/pointsTable', {
+  method: "post",
+  body: {
+   "competitionId": competitionId.value,
+  "language": "",
+  "pageNumber": 1,
+  "pageSize": 110
+}
+})
+tableList.value = DecryptData(courseLisst.value).r.data
 // total.value = DecryptData(courseList.value).r.total
 
+const getCourseFutureList = async () => {
+  const { data: courseList } = await useServerRequest<{ data: any }>('/rpa/competition/pointsTable', {
+    method: "post",
+    body: {
+      "competitionId": competitionId.value,
+      "language": "",
+      "pageNumber": 1,
+      "pageSize": 110
+    }
+  })
+  tableList.value = DecryptData(courseLisst.value).r.data
+}
 </script>
 <style lang="scss" scoped>
 .ranking{
@@ -80,9 +122,48 @@ console.log("联赛列表",decCourseList.value)
     }
     .left-select{
       display: flex;
+      margin-bottom: 15px;
       .left-select-test{
         color: #fff;
       }
+    }
+    .cla1{
+      background-color: green;
+      color: #fff;
+      line-height: 20px;
+    text-align: center;
+    display: block;
+    width: 20px;
+    font-size: 12px;
+    border-radius: 5px;
+    height: 20px;
+    margin: 0 auto;
+    color: white;
+    font-weight: bold;
+    }
+    .cla2{
+      background-color: red; color: #fff;line-height: 20px;
+    text-align: center;
+    display: block;
+    width: 20px;
+    font-size: 12px;
+    border-radius: 5px;
+    height: 20px;
+    margin: 0 auto;
+    color: white;
+    font-weight: bold;
+    }
+    .cla3{
+      background-color: rgb(255, 174, 0); color: #fff;line-height: 20px;
+    text-align: center;
+    display: block;
+    width: 20px;
+    font-size: 12px;
+    border-radius: 5px;
+    height: 20px;
+    margin: 0 auto;
+    color: white;
+    font-weight: bold;
     }
   }
   .right{
