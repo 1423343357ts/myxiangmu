@@ -102,11 +102,13 @@ if (props.type == 0) {
       "area": '',
       "language": '',
       "name": '',
+      
       "pageNumber": 1,
       "pageSize": 20
     }
   })
   decCourseList.value = DecryptData(courseList.value).r.data
+  console.log("赛程",DecryptData(courseList.value))
 } else if (props.type == 1) {
   
   console.log(props.type)

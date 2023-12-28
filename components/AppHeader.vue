@@ -20,8 +20,8 @@
 
       <div class="navbar-collapse">
         <ul>
-          <li v-for="(i, index) in movieList" :key="index">
-            <nuxt-link to="/">{{ i }}</nuxt-link>
+          <li v-for="(i, index) in movieList" :key="index" >
+            <nuxt-link :to="i.path">{{ i.name }}</nuxt-link>
           </li>
         </ul>
       </div>
@@ -73,7 +73,32 @@ import { CloseBold } from '@element-plus/icons-vue'
 const route = useRoute()
 const searchValue = ref<string>('')
 const token = ref<string | undefined>(undefined)
-const movieList = ref(['Xoilac TV', 'Lịch Thi Đấu', 'Bảng Xếp Hạng', 'KQBD', 'Nhận Định', 'Máy Tính Dự Đoán', 'Tin Thể Thao'])
+const movieList = ref([
+  {
+  'name':'Xoilac TV',
+  'path':'/'
+  } ,  
+  {
+  'name':'Bảng Xếp Hạng',
+  'path':'/ranking'
+  } ,  
+  {
+  'name':'Lịch Thi Đấu',
+  'path':'/ranking'
+  } , 
+  {
+  'name':'KQBD',
+  'path':'/ranking'
+  } , 
+  {
+  'name':'Nhận Định',
+  'path':'/ranking'
+  } , 
+  {
+  'name':'Máy Tính Dự Đoán',
+  'path':'/ranking'
+  } , 
+  ])
 const nowindex = ref<any>()
 
 const drawer = ref<boolean>(false)
@@ -131,7 +156,21 @@ const { data: navigation } = await useServerRequest<{ data: any }>('/rpa/competi
   }
 
 })
- 
+
+const { data: navigations } = await useServerRequest<{ data: any }>('/rpa/competition/leagueName', {
+  // query: { status: 0 }
+  method: "post",
+  body:
+  {
+  "area": "",
+  "language": "",
+  "name": "",
+  "pageNumber": 1,
+  "pageSize": 10
+}
+
+})
+ console.log("dsadsa",DecryptData(navigations.value))
 </script>
   
   

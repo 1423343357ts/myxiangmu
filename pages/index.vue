@@ -16,8 +16,8 @@
               </div>
             </template>
 
-            <div v-if="activeName == 'Nóng'" style="margin-bottom: 10px;">
-              <el-date-picker v-model="date" type="date" placeholder="Pick a day" :editable="false" :disabled-date="disabledDate" @change="handleChange()"/>
+            <div v-if="activeName == 'Theo ngày'" style="margin-bottom: 10px;">
+             <span class="date-picker-span">Theo ngày:</span><el-date-picker v-model="date" type="date" style="width: 300px;" placeholder="Pick a day" :editable="false" :disabled-date="disabledDate" @change="handleChange()"/>
             </div>
 
             <div class="card-list">
@@ -26,7 +26,7 @@
                 <div class="card-game-containe">
                   <div class="card-title">
                     <div class="owards"> {{ item.name }} </div>
-                    <div class="stage-label">Round 3</div>
+                    <!-- <div class="stage-label">Round 3</div> -->
                   </div>
 
                   <div class="blv-container">
@@ -73,11 +73,18 @@
                         <div class="match-status">
                           <div class="match-live-time-info-option">
                             <div class="live-icon"></div>
-                            <div class="match-time-count-option">H2: 92'</div>
+                            <!-- <div class="match-time-count-option">H2: 92'</div> -->
+                            <div class="match-time-count-option">{{item.startdate}}</div>
 
                           </div>
-                          <div class="match-score-option">
-                            2 - 1
+                          <!-- <div class="match-score-option" v-show="activeName=='Tất cả'">
+                           
+                          </div> -->
+                          <div class="match-score-option" v-show="activeName=='Trực tiếp'">
+                           {{ item.scoreTeama }}-{{ item.scoreTeamb }}
+                          </div>
+                          <div class="match-score-option" v-show="activeName=='Theo ngày' && item.scoreTeama">
+                           {{ item.scoreTeama }}-{{ item.scoreTeamb }}
                           </div>
                         </div>
 
@@ -140,7 +147,7 @@ let constList = ref([
     'title2': '7'
   },
   {
-    'title': 'Nóng',
+    'title': 'Theo ngày',
     'title2': '47'
   },
 ])
@@ -159,7 +166,7 @@ const handleTab = () => {
   pageNumber.value = 1
   if (activeName.value == 'Tất cả') getCourseList();
   if (activeName.value == 'Trực tiếp') getCourseIngList()
-  if (activeName.value == 'Nóng') getCourseFutureList()
+  if (activeName.value == 'Theo ngày') getCourseFutureList()
 }
 
 const decCourseList = ref([])
@@ -191,7 +198,7 @@ const getCourseList = async () => {
   })
   decCourseList.value = DecryptData(courseList.value).r.data
   total.value = DecryptData(courseList.value).r.total
-  console.log('courseList===', DecryptData(courseList.value))
+  console.log('赛程', DecryptData(courseList.value))
 }
 
 const getCourseIngList = async () => {
@@ -207,7 +214,7 @@ const getCourseIngList = async () => {
   })
   decCourseList.value = DecryptData(courseList.value).r.data
   total.value = DecryptData(courseList.value).r.total
-  console.log('courseList===', DecryptData(courseList.value))
+  console.log('进行中===', DecryptData(courseList.value))
 }
 
 const disabledDate  = (time: Date) => {
@@ -220,6 +227,7 @@ date.value = nuxtApp.$dayjs().format('YYYY-MM-DD')
 const handleChange = () => {
   console.log('===')
   getCourseFutureList()
+  console.log("当前时间",date.value)
 }
 
 const getCourseFutureList = async () => {
@@ -234,7 +242,7 @@ const getCourseFutureList = async () => {
   })
   decCourseList.value = DecryptData(courseList.value).r.data
   total.value = DecryptData(courseList.value).r.total
-  console.log('courseList===', DecryptData(courseList.value))
+  console.log('指定时间===', DecryptData(courseList.value))
 }
 
 const dom = ref<Array<HTMLElement>>([])
@@ -308,7 +316,9 @@ const handleCurrentChange = (val: number) => {
             background-color: $theme-color;
           }
         }
-
+        .date-picker-span{
+          color: #fff;
+        }
         .custom-tabs-label {
           .custom-title {
             color: $theme-font-color;
