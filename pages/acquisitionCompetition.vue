@@ -105,6 +105,8 @@ const Getthecompetition = async () => {
   console.log('获取比赛===', DecryptData(courseList.value))
 }
 Getthecompetition()
+
+
 // /rpa/competition/byCompetitionGetMatch
 </script>
 <style lang="scss" scoped>

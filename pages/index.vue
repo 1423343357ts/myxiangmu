@@ -264,7 +264,7 @@ const handleCurrentChange = (val: number) => {
   pageNumber.value = val
   if (activeName.value == 'Tất cả') getCourseList();
   if (activeName.value == 'Trực tiếp') getCourseIngList()
-  if (activeName.value == 'Nóng') getCourseFutureList()
+  if (activeName.value == 'Theo ngày') getCourseFutureList()
 }
 // const showdetails = (val: any) => {
 //   console.log('val',val)
@@ -275,11 +275,29 @@ const handleCurrentChange = (val: number) => {
 // 跳转至详情页面
 async function showdetails(data: any) {
   console.log(activeName.value,data)
+  let obj=ref({})
+  console.log(activeName.value=='Tất cả')
+  if(activeName.value=='Tất cả'){
+    
+    obj.value={
+      'matchId': data.competitionId
+    }
+  }
+  if(activeName.value=='Trực tiếp'){
+    obj.value={
+      'matchId': data.competitionId
+    }
+  }
+  if(activeName.value=='Theo ngày'){
+    obj.value={
+      'teamaId': data.teamaId,
+      'teambId': data.teambId
+    }
+  }
+  console.log("obj",obj)
   await navigateTo({
     path: '/details',
-    query: {
-      matchId: data.competitionId,
-    }
+    query: obj.value
   })
  
 }
