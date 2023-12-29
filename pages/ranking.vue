@@ -22,11 +22,11 @@
           </div>
           <div>
             <el-table :data="tableList" stripe style="width: 100%">
-              <el-table-column prop="teamName" label="Đội（团队）" width="180" />
-              <el-table-column prop="played" label="Số trận đấu(比赛次数)" width="180" />
-              <el-table-column prop="win" label="Thắng(赢)" />
-              <el-table-column prop="draw" label="Hòa(平局)" />
-              <el-table-column prop="lose" label="Thua(输)" />Phong độ
+              <el-table-column prop="teamName" label="Đội" width="180" />
+              <el-table-column prop="played" label="Số trận đấu" width="180" />
+              <el-table-column prop="win" label="Thắng" />
+              <el-table-column prop="draw" label="Hòa" />
+              <el-table-column prop="lose" label="Thua" />Phong độ
               <el-table-column label="Phong độ">
                 <template #default="scope">
                   <div style="display: flex;">

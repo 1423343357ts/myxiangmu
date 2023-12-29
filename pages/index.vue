@@ -20,7 +20,7 @@
              <span class="date-picker-span">Theo ngày:</span><el-date-picker v-model="date" type="date" style="width: 300px;" placeholder="Pick a day" :editable="false" :disabled-date="disabledDate" @change="handleChange()"/>
             </div>
 
-            <div class="card-list">
+            <div class="card-list" v-loading="loading">
               <!-- courseList.r.data -->
               <div class="card-game-iv" v-for="(item, index) in decCourseList" :key="index">
                 <div class="card-game-containe">
@@ -101,8 +101,9 @@
                   </nuxt-link>
 
                   <div class="watch">
-                    <div class="watch-btn">
-                      <nuxt-link>Xem ngay</nuxt-link>
+                    <div class="watch-btn"  @click="showdetails(item)">
+                      <!-- <nuxt-link :to="`/details/${categoryItem.value}/show?t=${item.name}`">Xem ngay</nuxt-link> -->
+                      <nuxt-link >Xem ngay</nuxt-link>
                       <span class="arrow-match">⟩⟩</span>
                     </div>
                   </div>
@@ -129,12 +130,13 @@
   
 <script setup lang="ts">
 const i18n = useI18n();
+const router = useRouter()
 import { useServerRequest } from "~/composables/useServerRequest";
 import type { gameRespon } from "~/types/index/index.d.ts"
 import { ref } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
 const fatherMessage = ref<string>("")
-
+let loading=ref<any>(false)
 const nowindex = ref<any>()
 // const clickindex=ref<any>{}
 let constList = ref([
@@ -164,9 +166,9 @@ const pageNumber = ref<number>(1)
 
 const handleTab = () => {
   pageNumber.value = 1
-  if (activeName.value == 'Tất cả') getCourseList();
-  if (activeName.value == 'Trực tiếp') getCourseIngList()
-  if (activeName.value == 'Theo ngày') getCourseFutureList()
+  if (activeName.value == 'Tất cả') loading.value=true ,getCourseList();
+  if (activeName.value == 'Trực tiếp')loading.value=true ,getCourseIngList()
+  if (activeName.value == 'Theo ngày')loading.value=true ,getCourseFutureList()
 }
 
 const decCourseList = ref([])
@@ -197,6 +199,7 @@ const getCourseList = async () => {
     }
   })
   decCourseList.value = DecryptData(courseList.value).r.data
+  loading.value=false
   total.value = DecryptData(courseList.value).r.total
   console.log('赛程', DecryptData(courseList.value))
 }
@@ -213,6 +216,7 @@ const getCourseIngList = async () => {
     }
   })
   decCourseList.value = DecryptData(courseList.value).r.data
+  loading.value=false
   total.value = DecryptData(courseList.value).r.total
   console.log('进行中===', DecryptData(courseList.value))
 }
@@ -226,6 +230,7 @@ date.value = nuxtApp.$dayjs().format('YYYY-MM-DD')
 
 const handleChange = () => {
   console.log('===')
+  loading.value=true
   getCourseFutureList()
   console.log("当前时间",date.value)
 }
@@ -241,6 +246,7 @@ const getCourseFutureList = async () => {
     }
   })
   decCourseList.value = DecryptData(courseList.value).r.data
+  loading.value=false
   total.value = DecryptData(courseList.value).r.total
   console.log('指定时间===', DecryptData(courseList.value))
 }
@@ -260,7 +266,23 @@ const handleCurrentChange = (val: number) => {
   if (activeName.value == 'Trực tiếp') getCourseIngList()
   if (activeName.value == 'Nóng') getCourseFutureList()
 }
-
+// const showdetails = (val: any) => {
+//   console.log('val',val)
+//   router.push(
+//     {name: 'details', params: {name: 'qwe', age: 23}}
+//   )
+// }
+// 跳转至详情页面
+async function showdetails(data: any) {
+  console.log(activeName.value,data)
+  await navigateTo({
+    path: '/details',
+    query: {
+      matchId: data.competitionId,
+    }
+  })
+ 
+}
 </script>
   
 <style lang="scss" scoped>

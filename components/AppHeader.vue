@@ -83,8 +83,8 @@ const movieList = ref([
   'path':'/ranking'
   } ,  
   {
-  'name':'Lịch Thi Đấu',
-  'path':'/ranking'
+  'name':'Giải đấu liên minh',
+  'path':'/acquisitionCompetition'
   } , 
   {
   'name':'KQBD',
