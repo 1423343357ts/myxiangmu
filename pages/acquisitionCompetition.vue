@@ -2,6 +2,9 @@
     <div class="container">
         <div class="acquisitionCompetition">
             <div class="left">
+                <div>
+                   <h1 class="entry-title owards">Chọn thời gian và tên giải đấu</h1> 
+                </div>
                 <div class="left-select">
                     <div class="left-select-test">Tên league：</div>
                     <div>
@@ -93,7 +96,7 @@ const Getthecompetition = async () => {
     method: "post",
     body: {
         "area": "",
-        "date": date.value,
+        "date": nuxtApp.$dayjs(date.value).format('YYYY-MM-DD') ,
         "language": "",
         "name": competitionId.value,
         "pageNumber": 1,
@@ -114,9 +117,34 @@ Getthecompetition()
   width: 100%;
   background: #1c1c1c;
   display: flex;
+  margin-top: 20px;
   .left{
-    margin-top: 10px;
     width: 90%;
+    h1::after {
+      content: "";
+      width: 50px;
+      height: 100%;
+      border-bottom-right-radius: 85%;
+      display: block;
+      background-color: #303030;
+      position: absolute;
+      right: -50px;
+      top: 0;
+  }
+    .entry-title {
+      padding: 20px 15px;
+      background-color: #303030;
+      font-size: 20px;
+      color: white;
+      display: block;
+      width: fit-content;
+      position: relative;
+    }
+    .owards {
+      text-transform: uppercase !important;
+      font-family: "Oswald", sans-serif !important;
+      font-weight: 500 !important;
+   }
     .left-test1{
       font-size: 38px;
       font-weight: 500;
@@ -135,7 +163,8 @@ Getthecompetition()
       }
     }
     .left-select{
-    line-height: 20px;
+      line-height: 20px;
+      margin-top: 20px;
       display: flex;
       margin-bottom: 15px;
       padding-left: 15px;
@@ -146,7 +175,7 @@ Getthecompetition()
     .left-center{
         color: #becbc3;
         font-size: 18px;
-        background: #504f4f;
+        padding-left: 15px;
     }
     .cla1{
       background-color: green;

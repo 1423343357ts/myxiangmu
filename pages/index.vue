@@ -101,7 +101,7 @@
                   </nuxt-link>
 
                   <div class="watch">
-                    <div class="watch-btn"  @click="showdetails(item)">
+                    <div class="watch-btn"  @click="showdetails(item)" style="cursor:pointer">
                       <!-- <nuxt-link :to="`/details/${categoryItem.value}/show?t=${item.name}`">Xem ngay</nuxt-link> -->
                       <nuxt-link >Xem ngay</nuxt-link>
                       <span class="arrow-match">⟩⟩</span>
@@ -137,6 +137,18 @@ import { ref } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
 const fatherMessage = ref<string>("")
 let loading=ref<any>(false)
+import { ElLoading } from 'element-plus'
+// 使用
+const openLoading = () => {
+  loading.value = ElLoading.service({
+    lock: true,
+    text: 'Loading',
+    background: 'black'
+  })
+}
+const closeLoading = () => {
+  loading.value.close()
+}
 const nowindex = ref<any>()
 // const clickindex=ref<any>{}
 let constList = ref([
@@ -152,6 +164,10 @@ let constList = ref([
     'title': 'Theo ngày',
     'title2': '47'
   },
+  {
+    'title':'Sẽ bắt đầu',
+    'title2':'1'
+  }
 ])
 // 移入移出
 function mouseenter(command: any) {
@@ -163,12 +179,13 @@ function mouseleave(command: any) {
 const activeName = ref('Tất cả')
 const date = ref('')
 const pageNumber = ref<number>(1)
-
+  // begin in a minute
 const handleTab = () => {
   pageNumber.value = 1
-  if (activeName.value == 'Tất cả') loading.value=true ,getCourseList();
-  if (activeName.value == 'Trực tiếp')loading.value=true ,getCourseIngList()
-  if (activeName.value == 'Theo ngày')loading.value=true ,getCourseFutureList()
+  if (activeName.value == 'Tất cả') openLoading() ,getCourseList();
+  if (activeName.value == 'Trực tiếp')openLoading() ,getCourseIngList()
+  if (activeName.value == 'Theo ngày')openLoading() ,getCourseFutureList()
+  if(activeName.value == 'Sẽ bắt đầu')openLoading() ,getbegininaminute()
 }
 
 const decCourseList = ref([])
@@ -178,7 +195,7 @@ const { data: courseList } = await useServerRequest<{ data: any }>('/rpa/competi
   body: {
     "area": '',
     "language": '',
-    "name": '',
+    "nameactiveName": '',
     "pageNumber": pageNumber.value,
     "pageSize": 20
   }
@@ -186,7 +203,7 @@ const { data: courseList } = await useServerRequest<{ data: any }>('/rpa/competi
 
 decCourseList.value = DecryptData(courseList.value).r.data
 total.value = DecryptData(courseList.value).r.total
-
+// 赛程
 const getCourseList = async () => {
   const { data: courseList } = await useServerRequest<{ data: any }>('/rpa/competition/schedule', {
     method: "post",
@@ -199,11 +216,11 @@ const getCourseList = async () => {
     }
   })
   decCourseList.value = DecryptData(courseList.value).r.data
-  loading.value=false
+  closeLoading()
   total.value = DecryptData(courseList.value).r.total
   console.log('赛程', DecryptData(courseList.value))
 }
-
+// 进行中赛事
 const getCourseIngList = async () => {
   const { data: courseList } = await useServerRequest<{ data: any }>('/rpa/competition/ongoingCompetition', {
     method: "post",
@@ -216,13 +233,13 @@ const getCourseIngList = async () => {
     }
   })
   decCourseList.value = DecryptData(courseList.value).r.data
-  loading.value=false
+  closeLoading()
   total.value = DecryptData(courseList.value).r.total
   console.log('进行中===', DecryptData(courseList.value))
 }
 
 const disabledDate  = (time: Date) => {
-    return time.getTime() < Date.now();
+    return time.getTime() <= Date.now();
 }
 
 const nuxtApp = useNuxtApp()
@@ -230,23 +247,24 @@ date.value = nuxtApp.$dayjs().format('YYYY-MM-DD')
 
 const handleChange = () => {
   console.log('===')
-  loading.value=true
+  openLoading()
   getCourseFutureList()
   console.log("当前时间",date.value)
 }
 
+// 按指定日期获取赛事
 const getCourseFutureList = async () => {
   const { data: courseList } = await useServerRequest<{ data: any }>('/rpa/competition/getCompetition', {
     method: "post",
     body: {
-      "date": date.value,
+      "date": nuxtApp.$dayjs(date.value).format('YYYY-MM-DD') ,
       "language": "",
       "pageNumber": pageNumber.value,
       "pageSize": 20,
     }
   })
   decCourseList.value = DecryptData(courseList.value).r.data
-  loading.value=false
+  closeLoading()
   total.value = DecryptData(courseList.value).r.total
   console.log('指定时间===', DecryptData(courseList.value))
 }
@@ -259,13 +277,34 @@ const openBlv = (idx: number) => {
 const closeBlv = (idx: number) => {
   dom.value[idx].style.display = 'none'
 }
+// 即将开始的比赛
+const getbegininaminute = async()=>{
+  const { data: courseList } = await useServerRequest<{ data: any }>('/rpa/competition/getReadyToStart', {
+    method: "post",
+    body: {
+      "area": "",
+      "language": "",
+      "name": "",
+      "pageNumber": pageNumber.value,
+      "pageSize": 20,
+
+    }
+  })
+  decCourseList.value = DecryptData(courseList.value).r.data
+  closeLoading()
+  total.value = DecryptData(courseList.value).r.total
+  console.log('即将开始的比赛===', DecryptData(courseList.value))
+}
 
 const handleCurrentChange = (val: number) => {
   pageNumber.value = val
-  if (activeName.value == 'Tất cả') getCourseList();
-  if (activeName.value == 'Trực tiếp') getCourseIngList()
-  if (activeName.value == 'Theo ngày') getCourseFutureList()
+  if (activeName.value == 'Tất cả') openLoading() ,getCourseList();
+  if (activeName.value == 'Trực tiếp') openLoading() ,getCourseIngList();
+  if (activeName.value == 'Theo ngày') openLoading() ,getCourseFutureList();
+  if (activeName.value == 'Sẽ bắt đầu')openLoading() ,getbegininaminute()
 }
+
+
 // const showdetails = (val: any) => {
 //   console.log('val',val)
 //   router.push(
@@ -277,18 +316,22 @@ async function showdetails(data: any) {
   console.log(activeName.value,data)
   let obj=ref({})
   console.log(activeName.value=='Tất cả')
+  // 赛程
   if(activeName.value=='Tất cả'){
-    
     obj.value={
       'matchId': data.competitionId
     }
   }
+  //进行中的
   if(activeName.value=='Trực tiếp'){
     obj.value={
-      'matchId': data.competitionId
+      'matchId': data.competitionId,
+      'teamaId': data.teamaId,
+      'teambId': data.teambId
     }
   }
-  if(activeName.value=='Theo ngày'){
+  // 按指定日期获取赛事 和 即将进行的赛事
+  if(activeName.value=='Theo ngày' || activeName.value=='Sẽ bắt đầu'){
     obj.value={
       'teamaId': data.teamaId,
       'teambId': data.teambId
@@ -308,7 +351,6 @@ async function showdetails(data: any) {
 
 .container {
   margin-top: 20px;
-
   h1::after {
     content: "";
     width: 50px;
@@ -320,7 +362,22 @@ async function showdetails(data: any) {
     right: -50px;
     top: 0;
   }
-
+  .el-loading-spinner .path {
+  -webkit-animation: loading-dash 1.5s ease-in-out infinite;
+  animation: loading-dash 1.5s ease-in-out infinite;
+  stroke-dasharray: 90, 150;
+  stroke-dashoffset: 0;
+  stroke-width: 2;
+  /* stroke: var(--el-color-primary); */
+  stroke-linecap: round;
+  stroke: rgb(240, 228, 188) !important;
+}
+.el-loading-spinner .el-loading-text {
+  /* color: var(--el-color-primary); */
+  color: rgb(240, 228, 188) !important;
+  margin: 3px 0;
+  font-size: 14px;
+}
   .index {
     width: 100%;
     background: $theme-bg-color;

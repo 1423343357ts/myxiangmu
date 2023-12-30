@@ -15,15 +15,12 @@
                 <div class="Competitiondeta_class-test"> Các trò chơi gần đây</div>
                 <div class="Competitiondeta_class-center1" v-if="teamsClash_show==false">Không có dữ liệu mới nhất!</div>
                 <div  v-if="teamsClash_show==true">
+                    <div  class="teamsClashlist_class">
+                        <div>Ghi điểm</div><div>Tên của đội</div><div>VS</div><div>Tên của đội</div><div>Ghi điểm</div>
+                    </div>
                     <div v-for="(item,index) in teamsClashlist" :key="index">
                         <div class="teamsClashlist_class">
-                            <div>Tên của đội</div><div>Ghi điểm</div><div>Ngày bắt đầu của trò chơi</div>
-                        </div>
-                        <div class="teamsClashlist_class">
-                            <div> <img :src="item.teamaImageUrl" alt="">{{ item.teamaShort }}</div><div>{{ item.scoreTeama }}</div><div>{{ item.startdate }}</div>
-                        </div>
-                        <div class="teamsClashlist_class">
-                            <div><img :src="item.teambImageUrl" alt="">{{ item.teambShort }}</div><div>{{ item.scoreTeamb }}</div><div>{{ item.startdate }}</div>
+                            <div>{{ item.scoreTeama }}</div><div> <img :src="item.teamaImageUrl" alt=""><div>{{ item.teamaShort }}</div></div><div>VS</div><div><img :src="item.teambImageUrl" alt=""><div>{{ item.teambShort }}</div></div><div>{{ item.scoreTeamb }}</div>
                         </div>
                     </div>
                 </div>
@@ -49,6 +46,14 @@ matchId.value =route.query.matchId
 teamaId.value =route.query.teamaId
 teambId.value =route.query.teambId
 console.log( matchId.value)
+if(matchId.value && teamaId.value){
+    console.log("两个都查")
+}else if(matchId.value){
+    console.log('只查获取比赛详情 赛事关键事件')
+}else if(teamaId.value){
+    console.log("只查两队交锋只获取最近的六条，未来赛事（当场比赛的两个队伍")
+}
+
 // 获取比赛详情.
 const Competitiondeta_show =ref<any>()
 const Competitiondeta = ref([])
@@ -62,14 +67,12 @@ if(matchId.value){
     }
     })
     Competitiondeta.value = DecryptData(Competitiondetailsdata.value).r
-   
     console.log('获取比赛详情',DecryptData(Competitiondetailsdata.value))
     if(typeof Competitiondeta.value === 'string'){
         // 是否展示比赛详情
         Competitiondeta_show.value=false
         // Competitiondeta_show.value=Competitiondeta.value.includes('暂无')
     }else{
-        console.log(DecryptData(Competitiondetailsdata.value))
         Competitiondeta_show.value=true
     }
 }else{
@@ -88,13 +91,12 @@ if(matchId.value){
     }
     })
     Key_events.value = DecryptData(Competitiondetailsdatas.value).r
-    console.log('赛事关键事件',Key_events.value.length)
+    console.log('赛事关键事件',DecryptData(Competitiondetailsdatas.value))
     if(typeof Key_events.value === 'string' || Key_events.value.length==0){
         // 是否展示赛事关键事件
         Key_events_show.value=false
         // Competitiondeta_show.value=Competitiondeta.value.includes('暂无')
     }else{
-        console.log(Key_events.value.length)
         Key_events_show.value=true
     }
 }else{
@@ -121,13 +123,42 @@ if(teamaId.value){
         teamsClash_show.value=false
         // Competitiondeta_show.value=Competitiondeta.value.includes('暂无')
     }else{
-        console.log(teamsClashlist.value.length)
         teamsClash_show.value=true
     }
-  console.log('获取近期比赛', DecryptData(courseList1.value))
 }else{
     teamsClash_show.value=false
 }
+
+
+// 未来赛事（当场比赛的两个队伍）
+const FutureEvents_show =ref<any>()
+const FutureEvents=ref([])
+if(teamaId.value){
+    const { data: courseList1 } = await useServerRequest<{ data: any }>('/rpa/competition/future', {
+        method: "post",
+        body: {
+            "date": "",
+            "language": "",
+            "pageNumber": 1,
+            "pageSize": 100,
+            "teamaId": route.query.teamaId,
+            "teambId": route.query.teambId,
+        }
+  })
+  FutureEvents.value = DecryptData(courseList1.value).r
+  console.log('未来赛事（当场比赛的两个队伍）',DecryptData(courseList1.value))
+  if(typeof FutureEvents.value === 'string'){
+        // 是否展示未来赛事（当场比赛的两个队伍）
+        FutureEvents_show.value=false
+        // Competitiondeta_show.value=Competitiondeta.value.includes('暂无')
+    }else{
+        FutureEvents_show.value=true
+    }
+}else{
+    FutureEvents_show.value=false
+}
+
+
 
 
 //   loading.value=false
@@ -138,6 +169,7 @@ if(teamaId.value){
 </script>
 <style lang="scss" scoped >
 .container{
+    margin-top: 20px;
     .details{
         width: 100%;
         .Competitiondeta_class{
@@ -169,7 +201,8 @@ if(teamaId.value){
             display: flex;
             div{
                 display: flex;
-                width: 300px;
+                flex:1;
+                width: 200px;
                 text-align: center;
                 line-height: 35px;
                 img{

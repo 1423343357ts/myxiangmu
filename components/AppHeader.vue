@@ -70,7 +70,6 @@
 <script setup lang="ts">
 // import{DecryptData} from ''
 import { CloseBold } from '@element-plus/icons-vue'
-const route = useRoute()
 const searchValue = ref<string>('')
 const token = ref<string | undefined>(undefined)
 const movieList = ref([
@@ -87,17 +86,17 @@ const movieList = ref([
   'path':'/acquisitionCompetition'
   } , 
   {
-  'name':'KQBD',
-  'path':'/ranking'
+  'name':'Kết quả truy vấn',
+  'path':'/CompetitionResults'
   } , 
-  {
-  'name':'Nhận Định',
-  'path':'/ranking'
-  } , 
-  {
-  'name':'Máy Tính Dự Đoán',
-  'path':'/ranking'
-  } , 
+  // {
+  // 'name':'Nhận Định',
+  // 'path':'/ranking'
+  // } , 
+  // {
+  // 'name':'Máy Tính Dự Đoán',
+  // 'path':'/ranking'
+  // } , 
   ])
 const nowindex = ref<any>()
 

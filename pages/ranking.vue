@@ -2,7 +2,9 @@
     <div class="container">
       <div class="ranking">
        <div class="left">
-          <div class="left-test1">Bảng Xếp Hạng Bóng Đá Mới Nhất, BXH Bóng Đá 24/7</div>
+          <div>
+             <h1 class="entry-title owards">Bảng Xếp Hạng Bóng Đá Mới Nhất, BXH Bóng Đá 24/7</h1> 
+          </div>
           <div class="left-test2">
             <a href="">Bảng xếp hạng bóng đá </a>
             là một cách tuyệt vời để theo dõi thành tích của các đội bóng. BXH cung cấp cái nhìn tổng quan về sự phát triển và vị trí của mỗi đội trong giải đấu. Người hâm mộ có thể dễ dàng nhận ra những câu lạc bộ đang thi đấu tốt hay những đội bóng đang trượt dốc. Thông qua thứ hạng của các đội cũng tạo cơ hội cạnh tranh, cố gắng vươn lên vị trí cao hơn trong cuộc đua tranh ngôi vô địch.
@@ -20,13 +22,21 @@
               </el-select>
             </div>
           </div>
-          <div>
+          <div class="tableList_table">
             <el-table :data="tableList" stripe style="width: 100%">
+              <el-table-column  width="80">
+                <template #default="scope">
+                  <div style="display: flex;">
+                    <img style="  max-width: 35px;height: auto;" :src="scope.row.teamLogo" alt="">
+                  </div>
+                </template>
+              </el-table-column>
               <el-table-column prop="teamName" label="Đội" width="180" />
-              <el-table-column prop="played" label="Số trận đấu" width="180" />
-              <el-table-column prop="win" label="Thắng" />
-              <el-table-column prop="draw" label="Hòa" />
-              <el-table-column prop="lose" label="Thua" />Phong độ
+              <el-table-column prop="pos" label="Xếp hạng" width="90"  align='center'/>
+              <el-table-column prop="played" label="Số trận đấu" width="180" align='center' />
+              <el-table-column prop="win" label="Thắng" width="80"  align='center'/>
+              <el-table-column prop="draw" label="Hòa" width="80"  align='center'/>
+              <el-table-column prop="lose" label="Thua" width="80"  align='center'/>
               <el-table-column label="Phong độ">
                 <template #default="scope">
                   <div style="display: flex;">
@@ -101,8 +111,34 @@ const getCourseFutureList = async () => {
   width: 100%;
   background: #1c1c1c;
   display: flex;
+  margin-top: 20px;
   .left{
     width: 70%;
+    h1::after {
+      content: "";
+      width: 50px;
+      height: 100%;
+      border-bottom-right-radius: 85%;
+      display: block;
+      background-color: #303030;
+      position: absolute;
+      right: -50px;
+      top: 0;
+  }
+    .entry-title {
+      padding: 20px 15px;
+      background-color: #303030;
+      font-size: 20px;
+      color: white;
+      display: block;
+      width: fit-content;
+      position: relative;
+    }
+    .owards {
+      text-transform: uppercase !important;
+      font-family: "Oswald", sans-serif !important;
+      font-weight: 500 !important;
+   }
     .left-test1{
       font-size: 38px;
       font-weight: 500;
@@ -111,8 +147,10 @@ const getCourseFutureList = async () => {
       margin-bottom: 15px;
     }
     .left-test2{
+      padding-left: 15px;
+      margin-top: 20px;
+      line-height: 22px;
       font-size: 18px;
-      line-height: 1;
       color: azure;
       font-weight: 400;
       margin-bottom: 15px;
@@ -121,6 +159,7 @@ const getCourseFutureList = async () => {
       }
     }
     .left-select{
+      padding-left: 15px;
       display: flex;
       margin-bottom: 15px;
       .left-select-test{
@@ -164,6 +203,9 @@ const getCourseFutureList = async () => {
     margin: 0 auto;
     color: white;
     font-weight: bold;
+    }
+    .tableList_table{
+      padding-left: 15px;
     }
   }
   .right{
